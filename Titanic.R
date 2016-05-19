@@ -21,19 +21,10 @@ dir()
 
 # list the sheets in the xl file 
 excel_sheets("titanic3.xls")
-
-# lets read it in
-#titanic <- read_excel("titanic3.xls") 
-# scratch that we need to read it in as csv
-# saved .xls as .csv
+ 
 
 # we read it in 
 titanic <- read_csv("titanic_original.csv", n_max= 1309)
-# Reading in directly as above :  could not locate the missing people with Embarkment  missing
-# by default na = c("",NA)
-# So I allow characters to be read in : so that I can wrangle it myself
-# titanic <- read_csv("titanic_original.csv", na = character())
-
 
 # titanic is avaliable in your workspace
 
@@ -61,83 +52,61 @@ for (entry in  missing_embarked_idx) {
 
 # lets substitute their embarking status to "S"
 # examine the records 
-#titanic[as.vector(missing_embarked_idx),] 
-#titanic$embarked[as.vector(missing_embarked_idx)] <-"S"
-
-# After doing this I am painfully aware that I can simply say 
+ 
 titanic$embarked[is.na(titanic$embarked)]<-"S"
-
-for (entry in  missing_embarked_idx) {
-  print(paste("here are are the missing embarkers indices", entry))  
-  print(paste("here are their names ", titanic$name[entry]))
-  print(paste("here are their Cleaned embarking status ", titanic$embarked[entry]))
-}
-
 
 
 # age
 
-# now locate the records with missing Age
-missing_age_idx <- as.vector(which(is.na(titanic$age)))
-for (entry in  missing_age_idx) {
-  print(paste("Idx", entry, "names ", titanic$name[entry],"age", titanic$age[entry] ))  
-  
-}
-
+# calculate the mean age of the remaining passengers
 print( paste(" Mean age is ", mean(titanic$age,na.rm = TRUE)))
-
 age_mean <-mean(titanic$age,na.rm = TRUE)
+
 # let's update the  missing entries with mean age
- 
-titanic$age[is.na(titanic$age)]<-mean(titanic$age,na.rm = TRUE)
+ titanic$age[is.na(titanic$age)]<-mean(titanic$age,na.rm = TRUE)
 
- 
-for (entry in  missing_age_idx) {
-   print(paste("Idx", entry, "name ", titanic$name[entry], "Age", titanic$age[entry]))
- }
-
-# Let's clean up the boat column
+ # Let's clean up the boat column
 
 miss_boat_idx <- as.vector(which(is.na(titanic$boat)))
- 
 titanic$boat[miss_boat_idx] <-"None"
-
- # 
-titanic$boat
+ 
 
 # If we have a cabin number, it is likely the passenger survived to give the information
 # Others with None may imply passenger did not survive
 # Lets add a variable using mutate
  
-titanic <- titanic %>% mutate(has_cabin_number = as.numeric(!(is.na(cabin) == TRUE)))
-
+titanic <- titanic %>% mutate(has_cabin_number = ifelse(is.na(titanic$cabin),0,1))
+str(titanic)
                                           
 # Use ggplot() for the first instruction
+# There were more men passengers than women
+# A mojority of them were pclass 3 passengers
 ggplot(titanic, aes(x = factor(pclass), fill = factor(sex))) + geom_bar( position = "dodge")
 
 
-# Use ggplot() for the second instruction?>
+# Use ggplot() for the second instruction
+# There were more men who died than women
+# Most men and women that died were travelling as pclass 3 passengers
 ggplot(titanic, aes(x = factor(pclass), fill = factor(sex))) + geom_bar( position = "dodge") + facet_grid( . ~ survived)
 
 # Position jitter (use below)
 posn.j <- position_jitter(0.5, 0)
 
 # Use ggplot() for the last instruction
-# Most young male passengers died and were from pclass 3
-# most survivors were women and older
-#
+# This chart highlights age and survivorship
+# Far greater young men perished(green) than women( red)
+# pclass 3 passengers perished the most
+# pclass 1 passengers survived the most and were mostly women
 ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(sex))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived)
 
 # Use ggplot() for the last instruction
-# female passengers with a cabin number
-# survived  to provide a cabin number
-ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(sex), shape = as.factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived)
 
-# Use ggplot() for the last instruction
-# first class seem to have cabin  numbers
-# Of the people who survived  most were from 1st class  and were able to provide cabin numbers
-ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived)
+# This is a facet of survivorship and having a cabin number
+# More first class passengers  seem to have cabin  numbers
+# More people with cabin numbers seem to have survived to provide the cabin number info
+ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(survived), shape = as.factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ has_cabin_number)
 
+ 
 
 # Lets fix the one NA in fare 
 titanic$fare[is.na(titanic$fare)]<-mean(titanic$fare,na.rm = TRUE)
