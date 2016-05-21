@@ -87,7 +87,8 @@ ggplot(titanic, aes(x = factor(pclass), fill = factor(sex))) + geom_bar( positio
 # Use ggplot() for the second instruction
 # There were more men who died than women
 # Most men and women that died were travelling as pclass 3 passengers
-ggplot(titanic, aes(x = factor(pclass), fill = factor(sex))) + geom_bar( position = "dodge") + facet_grid( . ~ survived)
+
+ggplot(titanic, aes(x = factor(pclass), fill = factor(sex))) + geom_bar( position = "dodge") + facet_grid( . ~ survived, labeller = label_both)
 
 # Position jitter (use below)
 posn.j <- position_jitter(0.5, 0)
@@ -97,14 +98,15 @@ posn.j <- position_jitter(0.5, 0)
 # Far greater young men perished(green) than women( red)
 # pclass 3 passengers perished the most
 # pclass 1 passengers survived the most and were mostly women
-ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(sex))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived)
+
+ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(sex))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived, labeller=label_both)
 
 # Use ggplot() for the last instruction
 
 # This is a facet of survivorship and having a cabin number
 # More first class passengers  seem to have cabin  numbers
 # More people with cabin numbers seem to have survived to provide the cabin number info
-ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(survived), shape = as.factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ has_cabin_number)
+ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(survived), shape = as.factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ has_cabin_number, labeller = label_both)
 
  
 
