@@ -146,12 +146,13 @@ posn.j <- position_jitter(0.5, 0)
 ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(sex))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ survived, labeller = label_both)
 ```
 
-### Plot 4 
+### Plot 4 ( Optional )
  This scatter shows relationship between  survivorship and having a cabin number.
  On the left is a panel for pasengers with no cabin number. 
  On the right is a panel for passengers for whom  we have cabin number records.  
  More first class passengers  seem to have cabin  numbers.  
  More people with cabin numbers seem to have survived to provide the cabin number info. 
+ 
 ```{r, echo = FALSE}
 ggplot(titanic, aes(x = factor(pclass), y = age,  col  = factor(survived), shape = as.factor(has_cabin_number))) + geom_jitter(alpha = 0.5, size= 3, position = posn.j) + facet_grid( . ~ has_cabin_number, labeller = label_both)
 
